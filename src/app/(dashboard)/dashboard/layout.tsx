@@ -50,11 +50,11 @@ export default function DashboardLayout({
   };
 
   const navLinks = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard }, // Overview bad dewa holo
-    { name: "Add New Studio", href: "/add-studio", icon: PlusCircle },
-    { name: "My Studio Listings", href: "/my-studio", icon: Building2 },
-    { name: "My Bookings", href: "/my-bookings", icon: CalendarDays },
-    { name: "Saved / Wishlist", href: "/wishlist", icon: Heart },
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard }, 
+    { name: "Add New Studio", href: "/dashboard/add-studio", icon: PlusCircle },
+    { name: "My Studio Listings", href: "/dashboard/my-studio", icon: Building2 },
+    { name: "My Bookings", href: "/dashboard/my-bookings", icon: CalendarDays },
+    { name: "Saved / Wishlist", href: "/dashboard/wishlist", icon: Heart },
     { name: "Back to Home", href: "/", icon: Home },
   ];
 
