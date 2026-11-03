@@ -400,7 +400,7 @@ export default function Navbar() {
                 </SheetClose>
 
                 <SheetClose asChild>
-                  <Link href="/studios" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
+                  <Link href="/explore-studio" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
                     <LayoutDashboard className="h-4 w-4" />
                     Explore Studios
                   </Link>
@@ -450,7 +450,7 @@ export default function Navbar() {
                     </SheetClose>
 
                     <SheetClose asChild>
-                      <Link href="/my-studios" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
+                      <Link href="/my-studio" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
                         <Building2 className="h-4 w-4 text-purple-400" />
                         My Studio Listings
                       </Link>

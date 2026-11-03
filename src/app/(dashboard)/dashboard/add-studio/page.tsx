@@ -49,7 +49,7 @@ export default function AddStudioPage() {
 
     try {
       // POST API Call with Headers & Method
-      const res = await fetch("http://localhost:5000/studio", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/studio`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
