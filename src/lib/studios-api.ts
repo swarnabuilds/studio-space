@@ -15,6 +15,22 @@ const SERVER_URI = (process.env.NEXT_PUBLIC_SERVER_URI ?? "http://localhost:5000
 
 const REQUEST_TIMEOUT_MS = 10_000;
 const OBJECT_ID_PATTERN = /^[a-f0-9]{24}$/i;
+const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY;
+const INTERNAL_API_TOKEN = process.env.INTERNAL_API_TOKEN;
+
+function getServerHeaders(extra: Record<string, string> = {}): Record<string, string> {
+  const headers: Record<string, string> = { ...extra };
+
+  if (INTERNAL_API_KEY) {
+    headers["x-internal-api-key"] = INTERNAL_API_KEY;
+  }
+
+  if (INTERNAL_API_TOKEN) {
+    headers.Authorization = `Bearer ${INTERNAL_API_TOKEN}`;
+  }
+
+  return headers;
+}
 
 export function getStudioApiUrl(path = ""): string {
   return `${SERVER_URI}/studio${path}`;
@@ -242,8 +258,11 @@ export async function deleteStudio(
   ownerEmail: string
 ): Promise<StudioMutationResult> {
   try {
-    const params = new URLSearchParams({ ownerEmail });
-    const response = await fetch(getStudioApiUrl(`/${id}?${params}`), {
+    const url =
+      typeof window === "undefined"
+        ? getStudioApiUrl(`/${id}?ownerEmail=${encodeURIComponent(ownerEmail)}`)
+        : getStudioApiUrl(`/${id}`);
+    const response = await fetch(url, {
       method: "DELETE",
       headers: { Accept: "application/json" },
     });

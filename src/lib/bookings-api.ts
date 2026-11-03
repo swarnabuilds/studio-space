@@ -5,10 +5,6 @@ import type {
   CreateBookingInput,
 } from "@/types/booking";
 
-const SERVER_URI = (process.env.NEXT_PUBLIC_SERVER_URI ?? "http://localhost:5000")
-  .trim()
-  .replace(/\/+$/, "");
-
 const REQUEST_TIMEOUT_MS = 10_000;
 const BOOKING_STATUSES = new Set([
   "Pending",
@@ -18,7 +14,13 @@ const BOOKING_STATUSES = new Set([
 ]);
 
 function getBookingsApiUrl(path = ""): string {
-  return `${SERVER_URI}/bookings${path}`;
+  if (typeof window === "undefined") {
+    const SERVER_URI = (process.env.NEXT_PUBLIC_SERVER_URI ?? "http://localhost:5000")
+      .trim()
+      .replace(/\/+$/, "");
+    return `${SERVER_URI}/bookings${path}`;
+  }
+  return `/api/bookings${path}`;
 }
 
 function normalizeBooking(value: unknown): Booking | null {
@@ -103,11 +105,13 @@ export async function getBookingsForUser(
   userEmail: string
 ): Promise<BookingsResult> {
   try {
-    const params = new URLSearchParams({ userEmail });
-    const response = await fetch(getBookingsApiUrl(`?${params}`), {
+    const params = typeof window === "undefined" ? new URLSearchParams({ userEmail }) : undefined;
+    const url = typeof window === "undefined" ? getBookingsApiUrl(`?${params}`) : getBookingsApiUrl();
+    const headers: Record<string, string> = { Accept: "application/json" };
+    const response = await fetch(url, {
       cache: "no-store",
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-      headers: { Accept: "application/json" },
+      headers,
     });
 
     if (!response.ok) {
@@ -182,10 +186,11 @@ export async function cancelBooking(
   userEmail: string
 ): Promise<BookingResult> {
   try {
-    const response = await fetch(getBookingsApiUrl(`/${id}/cancel`), {
+    const url = typeof window === "undefined" ? getBookingsApiUrl(`/${id}/cancel`) : `/api/bookings/${id}/cancel`;
+    const response = await fetch(url, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userEmail }),
+      body: JSON.stringify(typeof window === "undefined" ? { userEmail } : {}),
     });
 
     if (!response.ok) {
