@@ -34,6 +34,7 @@ export interface StudioQuery {
   maxPrice?: number;
   minCapacity?: number;
   minRating?: number;
+  limit?: number;
   sort: StudioSort;
 }
 

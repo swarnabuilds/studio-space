@@ -95,6 +95,7 @@ export function buildStudioSearchParams(query: StudioQuery): URLSearchParams {
   if (query.minRating !== undefined) {
     params.set("minRating", String(query.minRating));
   }
+  if (query.limit !== undefined) params.set("limit", String(query.limit));
   if (query.sort !== "newest") params.set("sort", query.sort);
 
   return params;
