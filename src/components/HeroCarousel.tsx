@@ -1,3 +1,4 @@
+ 
 "use client";
 
 import * as React from "react";
@@ -25,7 +26,7 @@ const slides = [
     subtitle:
       "Photography, Filmmaking, Podcasting, Music & More — All in One Place.",
     bgImage:
-      "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=90&w=2400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=90&w=2400&auto=format&fit=crop",
     exploreUrl: "/studios",
     hostUrl: "/host",
   },
@@ -36,7 +37,7 @@ const slides = [
     subtitle:
       "Book Soundproof Music & Podcast Studios Near You Effortlessly.",
     bgImage:
-      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=90&w=2400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=90&w=2400&auto=format&fit=crop",
     exploreUrl: "/studios?category=music",
     hostUrl: "/host",
   },
@@ -47,7 +48,7 @@ const slides = [
     subtitle:
       "Ideal for Fashion Shoots, Product Stills, and Commercial Video.",
     bgImage:
-      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=90&w=2400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=90&w=2400&auto=format&fit=crop",
     exploreUrl: "/studios?category=photography",
     hostUrl: "/host",
   },
@@ -93,7 +94,6 @@ export default function HeroCarousel() {
           loop: true,
         }}
       >
-
         <CarouselContent className="ml-0">
 
           {slides.map((slide, index) => (
@@ -103,11 +103,9 @@ export default function HeroCarousel() {
             >
 
               {/* Hero Section */}
-
               <div className="relative flex h-[calc(100svh-80px)] min-h-[540px] max-h-[800px] w-full items-center">
 
-                {/* Background Image */}
-
+                {/* Professional Background Image */}
                 <Image
                   src={slide.bgImage}
                   alt={slide.badge}
@@ -119,25 +117,21 @@ export default function HeroCarousel() {
                 />
 
                 {/* Gradient Overlay */}
-
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/55 to-slate-950/10" />
 
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-slate-950/10" />
 
                 {/* Hero Content */}
-
                 <div className="container relative z-10 mx-auto max-w-7xl px-6 lg:px-16">
 
                   <div className="max-w-3xl space-y-4">
 
                     {/* Badge */}
-
                     <div className="inline-flex rounded-full border border-white/20 bg-slate-900/60 px-4 py-1.5 text-xs font-semibold text-purple-200 shadow-xl backdrop-blur-md sm:text-sm">
                       {slide.badge}
                     </div>
 
                     {/* Title */}
-
                     <h1 className="whitespace-pre-line text-3xl font-extrabold leading-[1.15] tracking-tight text-white drop-shadow-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
 
                       {slide.id === 1 ? (
@@ -155,13 +149,11 @@ export default function HeroCarousel() {
                     </h1>
 
                     {/* Subtitle */}
-
                     <p className="max-w-2xl text-sm font-medium leading-relaxed text-slate-200 drop-shadow-lg sm:text-base lg:text-lg">
                       {slide.subtitle}
                     </p>
 
                     {/* Buttons */}
-
                     <div className="flex flex-wrap items-center gap-3 pt-2">
 
                       <Link href={slide.exploreUrl}>
@@ -181,20 +173,14 @@ export default function HeroCarousel() {
                       </Link>
 
                     </div>
-
                   </div>
-
                 </div>
-
               </div>
-
             </CarouselItem>
           ))}
-
         </CarouselContent>
 
         {/* CENTERED ARROWS */}
-
         <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-between px-5">
 
           <CarouselPrevious
@@ -208,7 +194,6 @@ export default function HeroCarousel() {
         </div>
 
         {/* Pagination Dots */}
-
         <div className="absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2.5">
 
           {Array.from({ length: count }).map((_, index) => (
@@ -225,9 +210,8 @@ export default function HeroCarousel() {
           ))}
 
         </div>
-
       </Carousel>
-
     </div>
   );
 }
+ 

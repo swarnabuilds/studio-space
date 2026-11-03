@@ -3,12 +3,13 @@ import { Camera, Mail, Phone, MapPin } from "lucide-react";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
 
 export default function Footer() {
+  const currentYear = 2026; // Static year to prevent server prerender mismatch error
+
   return (
     <footer className="w-full bg-slate-950 text-slate-300 border-t border-slate-800/80 pt-16 pb-12">
       <div className="container mx-auto px-6 lg:px-16 max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800/80">
           
-          {/* Brand & About Column */}
           <div className="lg:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-white">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-600 text-white">
@@ -22,7 +23,6 @@ export default function Footer() {
               Your ultimate marketplace to find and book professional creative spaces. From photography and filmmaking to podcasting and music production — all in one place.
             </p>
             
-            {/* Social Links */}
             <div className="flex items-center gap-3 pt-2">
               <a href="https://facebook.com" target="_blank" rel="noreferrer" className="h-9 w-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-purple-600 hover:border-purple-600 transition-all">
                 <FaFacebookF className="h-4 w-4" />
@@ -39,7 +39,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-white">Quick Links</h3>
             <ul className="space-y-2.5 text-sm">
@@ -51,7 +50,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Categories */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-white">Studio Types</h3>
             <ul className="space-y-2.5 text-sm">
@@ -59,11 +57,10 @@ export default function Footer() {
               <li><Link href="/studios?category=filmmaking" className="hover:text-purple-400 transition-colors">Film & Video Stage</Link></li>
               <li><Link href="/studios?category=podcasting" className="hover:text-purple-400 transition-colors">Podcast Booth</Link></li>
               <li><Link href="/studios?category=music" className="hover:text-purple-400 transition-colors">Music & Sound Studio</Link></li>
-              <li><Link href="/studios`" className="hover:text-purple-400 transition-colors">Dance & Rehearsal</Link></li>
+              <li><Link href="/studios?category=dance" className="hover:text-purple-400 transition-colors">Dance & Rehearsal</Link></li>
             </ul>
           </div>
 
-          {/* Contact Info */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-white">Get in Touch</h3>
             <ul className="space-y-3 text-sm text-slate-400">
@@ -84,9 +81,8 @@ export default function Footer() {
 
         </div>
 
-        {/* Bottom Copyright Section */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} StudioSpace. All rights reserved.</p>
+          <p>© {currentYear} StudioSpace. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="hover:text-slate-300 transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-slate-300 transition-colors">Terms of Service</Link>
