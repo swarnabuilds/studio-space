@@ -87,6 +87,9 @@ export function buildStudioSearchParams(query: StudioQuery): URLSearchParams {
 
   if (query.search) params.set("search", query.search);
   if (query.category) params.set("category", query.category);
+  if (query.ownerEmail && query.ownerEmail.trim()) {
+    params.set("ownerEmail", query.ownerEmail.trim());
+  }
   if (query.minPrice !== undefined) params.set("minPrice", String(query.minPrice));
   if (query.maxPrice !== undefined) params.set("maxPrice", String(query.maxPrice));
   if (query.minCapacity !== undefined) {

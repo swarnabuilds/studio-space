@@ -1,5 +1,8 @@
 import type {
+  CreateStudioInput,
   Studio,
+  StudioInput,
+  StudioMutationResult,
   StudioQuery,
   StudioResult,
   StudiosResult,
@@ -153,5 +156,111 @@ export async function getStudioById(id: string): Promise<StudioResult> {
   } catch (error) {
     console.error(`Failed to fetch studio ${id}:`, error);
     return { ok: false, reason: "error", error: describeRequestFailure(error) };
+  }
+}
+
+async function readApiError(
+  response: Response,
+  fallback: string
+): Promise<string> {
+  try {
+    const payload: unknown = await response.json();
+    if (payload && typeof payload === "object") {
+      const message = (payload as Record<string, unknown>).message;
+      if (typeof message === "string" && message.trim()) {
+        return message;
+      }
+    }
+  } catch {
+    // Ignore malformed error payloads.
+  }
+
+  return fallback;
+}
+
+export async function createStudio(
+  input: CreateStudioInput
+): Promise<StudioMutationResult> {
+  try {
+    const response = await fetch(getStudioApiUrl(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        error: await readApiError(
+          response,
+          "We couldn't publish your studio. Please try again."
+        ),
+      };
+    }
+
+    return { ok: true };
+  } catch (error) {
+    console.error("Failed to create studio:", error);
+    return { ok: false, error: describeRequestFailure(error) };
+  }
+}
+
+export async function updateStudio(
+  id: string,
+  ownerEmail: string,
+  input: StudioInput
+): Promise<StudioMutationResult> {
+  try {
+    const response = await fetch(getStudioApiUrl(`/${id}`), {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...input, ownerEmail }),
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        error: await readApiError(
+          response,
+          "We couldn't update your studio. Please try again."
+        ),
+      };
+    }
+
+    const payload: unknown = await response.json();
+    const studio = normalizeStudio(payload);
+
+    return { ok: true, studio: studio ?? undefined };
+  } catch (error) {
+    console.error(`Failed to update studio ${id}:`, error);
+    return { ok: false, error: describeRequestFailure(error) };
+  }
+}
+
+export async function deleteStudio(
+  id: string,
+  ownerEmail: string
+): Promise<StudioMutationResult> {
+  try {
+    const params = new URLSearchParams({ ownerEmail });
+    const response = await fetch(getStudioApiUrl(`/${id}?${params}`), {
+      method: "DELETE",
+      headers: { Accept: "application/json" },
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        error: await readApiError(
+          response,
+          "We couldn't delete this studio. Please try again."
+        ),
+      };
+    }
+
+    return { ok: true };
+  } catch (error) {
+    console.error(`Failed to delete studio ${id}:`, error);
+    return { ok: false, error: describeRequestFailure(error) };
   }
 }
