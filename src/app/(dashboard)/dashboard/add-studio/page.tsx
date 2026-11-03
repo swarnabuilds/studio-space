@@ -139,6 +139,7 @@ export default function AddStudioPage() {
                 <option value="filmmaking">Film & Video Stage</option>
                 <option value="podcasting">Podcast Booth</option>
                 <option value="music">Music & Sound Studio</option>
+                <option value="workshop">Workshop & Classroom</option>
                 <option value="dance">Dance & Rehearsal</option>
               </select>
             </div>

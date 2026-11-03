@@ -57,6 +57,7 @@ export default function Footer() {
               <li><Link href="/studios?category=filmmaking" className="hover:text-purple-400 transition-colors">Film & Video Stage</Link></li>
               <li><Link href="/studios?category=podcasting" className="hover:text-purple-400 transition-colors">Podcast Booth</Link></li>
               <li><Link href="/studios?category=music" className="hover:text-purple-400 transition-colors">Music & Sound Studio</Link></li>
+              <li><Link href="/studios?category=workshop" className="hover:text-purple-400 transition-colors">Workshop & Classroom</Link></li>
               <li><Link href="/studios?category=dance" className="hover:text-purple-400 transition-colors">Dance & Rehearsal</Link></li>
             </ul>
           </div>

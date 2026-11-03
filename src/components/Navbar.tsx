@@ -4,10 +4,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { useSession, signOut } from "@/lib/auth-client";
 import { toast } from "@/components/ui/toast";
+import { cn } from "@/lib/utils";
 
 import {
   Camera,
@@ -40,44 +41,68 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 
+function ProfileAvatar({
+  image,
+  name,
+  size = "normal",
+}: {
+  image?: string | null;
+  name?: string | null;
+  size?: "normal" | "small";
+}) {
+  const sizeClass = size === "small" ? "h-9 w-9" : "h-10 w-10";
+
+  return (
+    <div
+      className={`relative ${sizeClass} flex shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-purple-500/50 bg-purple-600/20`}
+    >
+      {image ? (
+        <Image
+          src={image}
+          alt={name || "User Avatar"}
+          fill
+          sizes="40px"
+          className="object-cover"
+          unoptimized
+        />
+      ) : (
+        <span className="text-sm font-bold text-purple-300">
+          {name?.charAt(0).toUpperCase() || "U"}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
 
   const { data: session, isPending } = useSession();
   const user = session?.user;
 
   const [loading, setLoading] = useState(false);
 
-  // Profile Avatar
-  const ProfileAvatar = ({
-    size = "normal",
-  }: {
-    size?: "normal" | "small";
-  }) => {
-    const sizeClass =
-      size === "small" ? "h-9 w-9" : "h-10 w-10";
+  const isActiveRoute = (href: string) =>
+    href === "/"
+      ? pathname === "/"
+      : pathname === href || pathname.startsWith(`${href}/`);
 
-    return (
-      <div
-        className={`relative ${sizeClass} flex shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-purple-500/50 bg-purple-600/20`}
-      >
-        {user?.image ? (
-          <Image
-            src={user.image}
-            alt={user.name || "User Avatar"}
-            fill
-            sizes="40px"
-            className="object-cover"
-            unoptimized
-          />
-        ) : (
-          <span className="text-sm font-bold text-purple-300">
-            {user?.name?.charAt(0).toUpperCase() || "U"}
-          </span>
-        )}
-      </div>
+  const desktopLinkClass = (href: string) =>
+    cn(
+      "relative text-sm font-medium transition hover:text-purple-400",
+      isActiveRoute(href) ? "text-white" : "text-slate-300",
+      isActiveRoute(href) &&
+        "after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-purple-500"
     );
-  };
+
+  const mobileLinkClass = (href: string) =>
+    cn(
+      "flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition",
+      isActiveRoute(href)
+        ? "bg-purple-600/15 font-semibold text-purple-300"
+        : "text-slate-300 hover:bg-slate-900 hover:text-purple-400"
+    );
 
   // Sign Out Function
   const handleSignOut = async () => {
@@ -147,23 +172,17 @@ export default function Navbar() {
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-8 md:flex">
 
-          <Link
-            href="/"
-            className="text-sm font-medium text-slate-300 transition hover:text-purple-400"
-          >
+          <Link href="/" className={desktopLinkClass("/")}>
             Home
           </Link>
 
-          <Link
-            href="/studios"
-            className="text-sm font-medium text-slate-300 transition hover:text-purple-400"
-          >
+          <Link href="/studios" className={desktopLinkClass("/studios")}>
             Explore Studios
           </Link>
 
           <Link
             href="/how-it-works"
-            className="text-sm font-medium text-slate-300 transition hover:text-purple-400"
+            className={desktopLinkClass("/how-it-works")}
           >
             How It Works
           </Link>
@@ -182,20 +201,22 @@ export default function Navbar() {
             /* Logged In User */
             <DropdownMenu>
 
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  aria-label="Open profile menu"
-                  className="flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/70 p-1.5 pr-3 transition hover:border-purple-500/50 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
-                >
-                  <ProfileAvatar />
+              <DropdownMenuTrigger
+                render={
+                  <button
+                    type="button"
+                    aria-label="Open profile menu"
+                    className="flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/70 p-1.5 pr-3 transition hover:border-purple-500/50 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                  />
+                }
+              >
+                <ProfileAvatar image={user.image} name={user.name} />
 
-                  <span className="hidden max-w-28 truncate text-sm font-medium text-white sm:block">
-                    {user.name}
-                  </span>
+                <span className="hidden max-w-28 truncate text-sm font-medium text-white sm:block">
+                  {user.name}
+                </span>
 
-                  <ChevronDown className="hidden h-4 w-4 text-slate-400 sm:block" />
-                </button>
+                <ChevronDown className="hidden h-4 w-4 text-slate-400 sm:block" />
               </DropdownMenuTrigger>
 
               <DropdownMenuContent
@@ -210,7 +231,7 @@ export default function Navbar() {
                   <DropdownMenuLabel className="p-3">
                     <div className="flex items-center gap-3">
 
-                      <ProfileAvatar />
+                      <ProfileAvatar image={user.image} name={user.name} />
 
                       <div className="min-w-0 flex-1">
 
@@ -234,11 +255,17 @@ export default function Navbar() {
                 {/* Account Navigation */}
                 <DropdownMenuGroup>
 
-                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg px-3 py-2.5 focus:bg-purple-500/10 focus:text-purple-300">
-                    <Link href="/dashboard/profile" className="flex w-full items-center gap-2">
-                      <User className="h-4 w-4 shrink-0 text-purple-400" />
-                      <span>My Profile</span>
-                    </Link>
+                  <DropdownMenuItem
+                    className="cursor-pointer rounded-lg px-3 py-2.5 focus:bg-purple-500/10 focus:text-purple-300"
+                    render={
+                      <Link
+                        href="/dashboard/profile"
+                        className="flex w-full items-center gap-2"
+                      />
+                    }
+                  >
+                    <User className="h-4 w-4 shrink-0 text-purple-400" />
+                    <span>My Profile</span>
                   </DropdownMenuItem>
  
                 </DropdownMenuGroup>
@@ -248,18 +275,30 @@ export default function Navbar() {
                 {/* Studio Management */}
                 <DropdownMenuGroup>
 
-                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg px-3 py-2.5 focus:bg-purple-500/10 focus:text-purple-300">
-                    <Link href="/dashboard/add-studio" className="flex w-full items-center gap-2">
-                      <PlusCircle className="h-4 w-4 shrink-0 text-purple-400" />
-                      <span>Add New Studio</span>
-                    </Link>
+                  <DropdownMenuItem
+                    className="cursor-pointer rounded-lg px-3 py-2.5 focus:bg-purple-500/10 focus:text-purple-300"
+                    render={
+                      <Link
+                        href="/dashboard/add-studio"
+                        className="flex w-full items-center gap-2"
+                      />
+                    }
+                  >
+                    <PlusCircle className="h-4 w-4 shrink-0 text-purple-400" />
+                    <span>Add New Studio</span>
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg px-3 py-2.5 focus:bg-purple-500/10 focus:text-purple-300">
-                    <Link href="/dashboard/my-studio" className="flex w-full items-center gap-2">
-                      <Building2 className="h-4 w-4 shrink-0 text-purple-400" />
-                      <span>My Studio Listings</span>
-                    </Link>
+                  <DropdownMenuItem
+                    className="cursor-pointer rounded-lg px-3 py-2.5 focus:bg-purple-500/10 focus:text-purple-300"
+                    render={
+                      <Link
+                        href="/dashboard/my-studio"
+                        className="flex w-full items-center gap-2"
+                      />
+                    }
+                  >
+                    <Building2 className="h-4 w-4 shrink-0 text-purple-400" />
+                    <span>My Studio Listings</span>
                   </DropdownMenuItem>
 
                 </DropdownMenuGroup>
@@ -269,18 +308,30 @@ export default function Navbar() {
                 {/* Booking and Wishlist */}
                 <DropdownMenuGroup>
 
-                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg px-3 py-2.5 focus:bg-purple-500/10 focus:text-purple-300">
-                    <Link href="/dashboad/my-bookings" className="flex w-full items-center gap-2">
-                      <CalendarCheck className="h-4 w-4 shrink-0 text-purple-400" />
-                      <span>My Bookings</span>
-                    </Link>
+                  <DropdownMenuItem
+                    className="cursor-pointer rounded-lg px-3 py-2.5 focus:bg-purple-500/10 focus:text-purple-300"
+                    render={
+                      <Link
+                        href="/dashboard/my-bookings"
+                        className="flex w-full items-center gap-2"
+                      />
+                    }
+                  >
+                    <CalendarCheck className="h-4 w-4 shrink-0 text-purple-400" />
+                    <span>My Bookings</span>
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg px-3 py-2.5 focus:bg-purple-500/10 focus:text-purple-300">
-                    <Link href="/dashboard/wishlist" className="flex w-full items-center gap-2">
-                      <Heart className="h-4 w-4 shrink-0 text-purple-400" />
-                      <span>Saved / Wishlist</span>
-                    </Link>
+                  <DropdownMenuItem
+                    className="cursor-pointer rounded-lg px-3 py-2.5 focus:bg-purple-500/10 focus:text-purple-300"
+                    render={
+                      <Link
+                        href="/dashboard/wishlist"
+                        className="flex w-full items-center gap-2"
+                      />
+                    }
+                  >
+                    <Heart className="h-4 w-4 shrink-0 text-purple-400" />
+                    <span>Saved / Wishlist</span>
                   </DropdownMenuItem>
 
                 </DropdownMenuGroup>
@@ -342,14 +393,16 @@ export default function Navbar() {
           {/* Mobile Menu */}
           <Sheet>
 
-            <SheetTrigger asChild>
-              <button
-                type="button"
-                aria-label="Open navigation menu"
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-white transition hover:bg-slate-800 md:hidden"
-              >
-                <Menu className="h-5 w-5" />
-              </button>
+            <SheetTrigger
+              render={
+                <button
+                  type="button"
+                  aria-label="Open navigation menu"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-white transition hover:bg-slate-800 md:hidden"
+                />
+              }
+            >
+              <Menu className="h-5 w-5" />
             </SheetTrigger>
 
             <SheetContent
@@ -372,7 +425,7 @@ export default function Navbar() {
               {user && (
                 <div className="mb-6 flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900 p-3">
 
-                  <ProfileAvatar />
+                  <ProfileAvatar image={user.image} name={user.name} />
 
                   <div className="min-w-0 flex-1">
 
@@ -392,25 +445,35 @@ export default function Navbar() {
               {/* Mobile Navigation */}
               <nav className="flex flex-col gap-2">
 
-                <SheetClose asChild>
-                  <Link href="/" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
-                    <Camera className="h-4 w-4" />
-                    Home
-                  </Link>
+                <SheetClose
+                  nativeButton={false}
+                  render={<Link href="/" className={mobileLinkClass("/")} />}
+                >
+                  <Camera className="h-4 w-4" />
+                  Home
                 </SheetClose>
 
-                <SheetClose asChild>
-                  <Link href="/explore-studio" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
-                    <LayoutDashboard className="h-4 w-4" />
-                    Explore Studios
-                  </Link>
+                <SheetClose
+                  nativeButton={false}
+                  render={
+                    <Link href="/studios" className={mobileLinkClass("/studios")} />
+                  }
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  Explore Studios
                 </SheetClose>
 
-                <SheetClose asChild>
-                  <Link href="/how-it-works" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
-                    <Settings className="h-4 w-4" />
-                    How It Works
-                  </Link>
+                <SheetClose
+                  nativeButton={false}
+                  render={
+                    <Link
+                      href="/how-it-works"
+                      className={mobileLinkClass("/how-it-works")}
+                    />
+                  }
+                >
+                  <Settings className="h-4 w-4" />
+                  How It Works
                 </SheetClose>
 
                 {user ? (
@@ -422,18 +485,30 @@ export default function Navbar() {
                       My Account
                     </p>
 
-                    <SheetClose asChild>
-                      <Link href="/profile" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
-                        <User className="h-4 w-4 text-purple-400" />
-                        My Profile
-                      </Link>
+                    <SheetClose
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href="/dashboard/profile"
+                          className={mobileLinkClass("/dashboard/profile")}
+                        />
+                      }
+                    >
+                      <User className="h-4 w-4 text-purple-400" />
+                      My Profile
                     </SheetClose>
 
-                    <SheetClose asChild>
-                      <Link href="/dashboard" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
-                        <LayoutDashboard className="h-4 w-4 text-purple-400" />
-                        Dashboard
-                      </Link>
+                    <SheetClose
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href="/dashboard/my-studio"
+                          className={mobileLinkClass("/dashboard/my-studio")}
+                        />
+                      }
+                    >
+                      <LayoutDashboard className="h-4 w-4 text-purple-400" />
+                      Dashboard
                     </SheetClose>
 
                     <div className="my-2 border-t border-slate-800" />
@@ -442,18 +517,30 @@ export default function Navbar() {
                       Studio Management
                     </p>
 
-                    <SheetClose asChild>
-                      <Link href="/studios/new" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
-                        <PlusCircle className="h-4 w-4 text-purple-400" />
-                        Add New Studio
-                      </Link>
+                    <SheetClose
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href="/dashboard/add-studio"
+                          className={mobileLinkClass("/dashboard/add-studio")}
+                        />
+                      }
+                    >
+                      <PlusCircle className="h-4 w-4 text-purple-400" />
+                      Add New Studio
                     </SheetClose>
 
-                    <SheetClose asChild>
-                      <Link href="/my-studio" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
-                        <Building2 className="h-4 w-4 text-purple-400" />
-                        My Studio Listings
-                      </Link>
+                    <SheetClose
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href="/dashboard/my-studio"
+                          className={mobileLinkClass("/dashboard/my-studio")}
+                        />
+                      }
+                    >
+                      <Building2 className="h-4 w-4 text-purple-400" />
+                      My Studio Listings
                     </SheetClose>
 
                     <div className="my-2 border-t border-slate-800" />
@@ -462,25 +549,43 @@ export default function Navbar() {
                       My Activities
                     </p>
 
-                    <SheetClose asChild>
-                      <Link href="/my-bookings" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
-                        <CalendarCheck className="h-4 w-4 text-purple-400" />
-                        My Bookings
-                      </Link>
+                    <SheetClose
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href="/dashboard/my-bookings"
+                          className={mobileLinkClass("/dashboard/my-bookings")}
+                        />
+                      }
+                    >
+                      <CalendarCheck className="h-4 w-4 text-purple-400" />
+                      My Bookings
                     </SheetClose>
 
-                    <SheetClose asChild>
-                      <Link href="/wishlist" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
-                        <Heart className="h-4 w-4 text-purple-400" />
-                        Saved / Wishlist
-                      </Link>
+                    <SheetClose
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href="/dashboard/wishlist"
+                          className={mobileLinkClass("/dashboard/wishlist")}
+                        />
+                      }
+                    >
+                      <Heart className="h-4 w-4 text-purple-400" />
+                      Saved / Wishlist
                     </SheetClose>
 
-                    <SheetClose asChild>
-                      <Link href="/settings" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900 hover:text-purple-400">
-                        <Settings className="h-4 w-4 text-purple-400" />
-                        Settings
-                      </Link>
+                    <SheetClose
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href="/dashboard/profile"
+                          className={mobileLinkClass("/dashboard/profile")}
+                        />
+                      }
+                    >
+                      <Settings className="h-4 w-4 text-purple-400" />
+                      Settings
                     </SheetClose>
 
                     <div className="my-2 border-t border-slate-800" />
@@ -501,17 +606,29 @@ export default function Navbar() {
 
                     <div className="my-2 border-t border-slate-800" />
 
-                    <SheetClose asChild>
-                      <Link href="/login" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900">
-                        <User className="h-4 w-4" />
-                        Sign In
-                      </Link>
+                    <SheetClose
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href="/login"
+                          className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-slate-900"
+                        />
+                      }
+                    >
+                      <User className="h-4 w-4" />
+                      Sign In
                     </SheetClose>
 
-                    <SheetClose asChild>
-                      <Link href="/register" className="rounded-lg bg-purple-600 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-purple-700">
-                        Create Account
-                      </Link>
+                    <SheetClose
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href="/register"
+                          className="rounded-lg bg-purple-600 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-purple-700"
+                        />
+                      }
+                    >
+                      Create Account
                     </SheetClose>
 
                   </>
