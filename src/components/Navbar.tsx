@@ -1,10 +1,11 @@
  
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 
 import { useSession, signOut } from "@/lib/auth-client";
 import { toast } from "@/components/ui/toast";
@@ -84,21 +85,15 @@ export default function Navbar() {
   const user = session?.user;
 
   const [loading, setLoading] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  React.useEffect(() => {
-    const stored = localStorage.getItem("theme") as "dark" | "light" | null;
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial = stored || (prefersDark ? "dark" : "light");
-    setTheme(initial);
-    document.documentElement.classList.toggle("dark", initial === "dark");
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   const toggleTheme = () => {
-    const next = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    localStorage.setItem("theme", next);
-    document.documentElement.classList.toggle("dark", next === "dark");
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   const isActiveRoute = (href: string) =>
@@ -208,9 +203,9 @@ export default function Navbar() {
             type="button"
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-800 bg-slate-900/70 text-slate-300 transition hover:bg-slate-800 hover:text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-800 bg-slate-900/70 text-slate-300 transition hover:bg-slate-800 hover:text-white dark:border-slate-700"
           >
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {mounted && theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
 
           {isPending ? (
