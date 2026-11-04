@@ -5,7 +5,7 @@ import RetryButton from "@/components/RetryButton";
 import StudioCard from "@/components/StudioCard";
 import { getStudios } from "@/lib/studios-api";
 
-const TOP_STUDIO_LIMIT = 5;
+const TOP_STUDIO_LIMIT = 6;
 
 export default async function TopStudios() {
   const result = await getStudios({
@@ -57,7 +57,7 @@ export default async function TopStudios() {
           </span>
 
           <h2 className="text-2xl font-extrabold tracking-tight text-white lg:text-4xl">
-            Top 5 <span className="text-purple-400">Studios</span>
+            Featured <span className="text-purple-400">Top Studios</span>
           </h2>
 
           <p className="max-w-xl text-sm leading-relaxed text-slate-400">

@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import FeaturesSection from "@/components/FeaturesSection";
 import HeroCarousel from "@/components/HeroCarousel";
 import HowItWorks from "@/components/HowItWorks";
 import ProtectedGuarantee from "@/components/ProtectedGuarantee";
@@ -9,6 +10,7 @@ export default function Home() {
   return (
     <div>
       <HeroCarousel />
+      <FeaturesSection />
       <Suspense fallback={<TopStudiosSkeleton />}>
         <TopStudios />
       </Suspense>

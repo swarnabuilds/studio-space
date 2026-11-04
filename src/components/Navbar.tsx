@@ -22,6 +22,8 @@ import {
   Building2,
   CalendarCheck,
   Heart,
+  Moon,
+  Sun,
 } from "lucide-react";
 
 import {
@@ -82,6 +84,22 @@ export default function Navbar() {
   const user = session?.user;
 
   const [loading, setLoading] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  React.useEffect(() => {
+    const stored = localStorage.getItem("theme") as "dark" | "light" | null;
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const initial = stored || (prefersDark ? "dark" : "light");
+    setTheme(initial);
+    document.documentElement.classList.toggle("dark", initial === "dark");
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    localStorage.setItem("theme", next);
+    document.documentElement.classList.toggle("dark", next === "dark");
+  };
 
   const isActiveRoute = (href: string) =>
     href === "/"
@@ -180,17 +198,20 @@ export default function Navbar() {
             Explore Studios
           </Link>
 
-          <Link
-            href="/how-it-works"
-            className={desktopLinkClass("/how-it-works")}
-          >
-            How It Works
-          </Link>
+         
 
         </nav>
 
         {/* Right Section */}
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-800 bg-slate-900/70 text-slate-300 transition hover:bg-slate-800 hover:text-white"
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
 
           {isPending ? (
 
@@ -321,18 +342,7 @@ export default function Navbar() {
                     <span>My Bookings</span>
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem
-                    className="cursor-pointer rounded-lg px-3 py-2.5 focus:bg-purple-500/10 focus:text-purple-300"
-                    render={
-                      <Link
-                        href="/dashboard/wishlist"
-                        className="flex w-full items-center gap-2"
-                      />
-                    }
-                  >
-                    <Heart className="h-4 w-4 shrink-0 text-purple-400" />
-                    <span>Saved / Wishlist</span>
-                  </DropdownMenuItem>
+                 
 
                 </DropdownMenuGroup>
 
@@ -463,18 +473,7 @@ export default function Navbar() {
                   Explore Studios
                 </SheetClose>
 
-                <SheetClose
-                  nativeButton={false}
-                  render={
-                    <Link
-                      href="/how-it-works"
-                      className={mobileLinkClass("/how-it-works")}
-                    />
-                  }
-                >
-                  <Settings className="h-4 w-4" />
-                  How It Works
-                </SheetClose>
+               
 
                 {user ? (
                   <>
@@ -562,18 +561,7 @@ export default function Navbar() {
                       My Bookings
                     </SheetClose>
 
-                    <SheetClose
-                      nativeButton={false}
-                      render={
-                        <Link
-                          href="/dashboard/wishlist"
-                          className={mobileLinkClass("/dashboard/wishlist")}
-                        />
-                      }
-                    >
-                      <Heart className="h-4 w-4 text-purple-400" />
-                      Saved / Wishlist
-                    </SheetClose>
+                   
 
                     <SheetClose
                       nativeButton={false}
