@@ -177,6 +177,11 @@ function BookingCard({
   const handleCancel = async () => {
     if (!isPending || cancelling) return;
 
+    const confirmed = window.confirm(
+      "Cancel this booking request? This action cannot be undone."
+    );
+    if (!confirmed) return;
+
     setCancelling(true);
 
     const result = await cancelBooking(booking._id, userEmail);

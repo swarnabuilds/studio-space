@@ -3,7 +3,6 @@ import Link from "next/link";
 import {
   ArrowLeft,
   BadgeCheck,
-  CalendarDays,
   Check,
   ChevronRight,
   Clock,
@@ -17,6 +16,7 @@ import {
   Users,
 } from "lucide-react";
 
+import BookingWidget from "@/components/BookingWidget";
 import StudioImage from "@/components/StudioImage";
 import {
   categoryIconElement,
@@ -167,7 +167,7 @@ export default function StudioDetailsContent({
                 value={hasRating ? `${formatRating(studio.rating)} / 5` : "New listing"}
               />
               <DetailStat
-                icon={<CalendarDays className="h-4 w-4" aria-hidden="true" />}
+                icon={<Clock className="h-4 w-4" aria-hidden="true" />}
                 label="Listed"
                 value={formatDate(studio.createdAt)}
               />
@@ -229,29 +229,19 @@ export default function StudioDetailsContent({
         </div>
 
         <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-black/20">
-            <p className="flex items-end gap-1.5">
-              <span className="text-3xl font-extrabold text-white">
-                {formatPrice(studio.price)}
-              </span>
-              <span className="pb-1 text-sm text-slate-500">/ hour</span>
-            </p>
+          <BookingWidget studioId={studio._id} studioPrice={studio.price} />
 
-            <p className="mt-1 text-xs text-slate-500">
-              Listed rate — confirm final pricing with the host.
+          <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-6">
+            <p className="text-center text-xs text-slate-500">
+              Prefer to reach out directly?
             </p>
-
             <a
               href={enquiryHref}
-              className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-5 text-sm font-semibold text-white shadow-lg shadow-purple-950/40 transition hover:bg-purple-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+              className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900/70 px-5 text-sm font-medium text-slate-200 transition hover:border-slate-600 hover:text-white"
             >
               <Mail className="h-4 w-4" aria-hidden="true" />
               Contact Host
             </a>
-
-            <p className="mt-3 text-center text-[11px] text-slate-500">
-              This page is read-only. No payment is taken on StudioSpace.
-            </p>
 
             <dl className="mt-6 space-y-3 border-t border-slate-800 pt-5 text-sm">
               <div className="flex items-center justify-between gap-4">
