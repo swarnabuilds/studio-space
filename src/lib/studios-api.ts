@@ -33,6 +33,7 @@ function getServerHeaders(extra: Record<string, string> = {}): Record<string, st
 }
 
 export function getStudioApiUrl(path = ""): string {
+  // সার্ভার রাউট `/studio` এর সাথে পাথ যুক্ত করা হলো
   return `${SERVER_URI}/studio${path}`;
 }
 
@@ -93,7 +94,7 @@ export async function getStudios(query: StudioQuery): Promise<StudiosResult> {
     const response = await fetch(url, {
       cache: "no-store",
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-      headers: { Accept: "application/json" },
+      headers: { Accept: "application/json", ...getServerHeaders() },
     });
 
     if (!response.ok) {
@@ -137,7 +138,7 @@ export async function getStudioById(id: string): Promise<StudioResult> {
     const response = await fetch(getStudioApiUrl(`/${id}`), {
       cache: "no-store",
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-      headers: { Accept: "application/json" },
+      headers: { Accept: "application/json", ...getServerHeaders() },
     });
 
     if (response.status === 404 || response.status === 400) {
@@ -186,6 +187,10 @@ async function readApiError(
       if (typeof message === "string" && message.trim()) {
         return message;
       }
+      const error = (payload as Record<string, unknown>).error;
+      if (typeof error === "string" && error.trim()) {
+        return error;
+      }
     }
   } catch {
     // Ignore malformed error payloads.
@@ -200,7 +205,7 @@ export async function createStudio(
   try {
     const response = await fetch(getStudioApiUrl(), {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...getServerHeaders() },
       body: JSON.stringify(input),
     });
 
@@ -229,7 +234,7 @@ export async function updateStudio(
   try {
     const response = await fetch(getStudioApiUrl(`/${id}`), {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...getServerHeaders() },
       body: JSON.stringify({ ...input, ownerEmail }),
     });
 
@@ -258,13 +263,10 @@ export async function deleteStudio(
   ownerEmail: string
 ): Promise<StudioMutationResult> {
   try {
-    const url =
-      typeof window === "undefined"
-        ? getStudioApiUrl(`/${id}?ownerEmail=${encodeURIComponent(ownerEmail)}`)
-        : getStudioApiUrl(`/${id}`);
+    const url = getStudioApiUrl(`/${id}?ownerEmail=${encodeURIComponent(ownerEmail)}`);
     const response = await fetch(url, {
       method: "DELETE",
-      headers: { Accept: "application/json" },
+      headers: { Accept: "application/json", ...getServerHeaders() },
     });
 
     if (!response.ok) {

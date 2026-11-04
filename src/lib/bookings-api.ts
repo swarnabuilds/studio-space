@@ -13,11 +13,21 @@ const BOOKING_STATUSES = new Set([
   "Cancelled",
 ]);
 
+const SERVER_URI = (process.env.NEXT_PUBLIC_SERVER_URI ?? "http://localhost:5000")
+  .trim()
+  .replace(/\/+$/, "");
+const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY;
+const INTERNAL_API_TOKEN = process.env.INTERNAL_API_TOKEN;
+
+function getBookingsServerHeaders(extra: Record<string, string> = {}): Record<string, string> {
+  const headers: Record<string, string> = { ...extra };
+  if (INTERNAL_API_KEY) headers["x-internal-api-key"] = INTERNAL_API_KEY;
+  if (INTERNAL_API_TOKEN) headers.Authorization = `Bearer ${INTERNAL_API_TOKEN}`;
+  return headers;
+}
+
 function getBookingsApiUrl(path = ""): string {
   if (typeof window === "undefined") {
-    const SERVER_URI = (process.env.NEXT_PUBLIC_SERVER_URI ?? "http://localhost:5000")
-      .trim()
-      .replace(/\/+$/, "");
     return `${SERVER_URI}/bookings${path}`;
   }
   return `/api/bookings${path}`;
@@ -107,7 +117,7 @@ export async function getBookingsForUser(
   try {
     const params = typeof window === "undefined" ? new URLSearchParams({ userEmail }) : undefined;
     const url = typeof window === "undefined" ? getBookingsApiUrl(`?${params}`) : getBookingsApiUrl();
-    const headers: Record<string, string> = { Accept: "application/json" };
+    const headers: Record<string, string> = { Accept: "application/json", ...getBookingsServerHeaders() };
     const response = await fetch(url, {
       cache: "no-store",
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
@@ -150,7 +160,7 @@ export async function createBooking(
   try {
     const response = await fetch(getBookingsApiUrl(), {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...getBookingsServerHeaders() },
       body: JSON.stringify(input),
     });
 
@@ -189,7 +199,7 @@ export async function cancelBooking(
     const url = typeof window === "undefined" ? getBookingsApiUrl(`/${id}/cancel`) : `/api/bookings/${id}/cancel`;
     const response = await fetch(url, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...getBookingsServerHeaders() },
       body: JSON.stringify(typeof window === "undefined" ? { userEmail } : {}),
     });
 
