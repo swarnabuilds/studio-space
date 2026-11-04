@@ -50,17 +50,7 @@ export default function ProtectedGuarantee() {
                 We safeguard every shoot. Enjoy total peace of mind with our built-in coverage, verified identities, and encrypted financial transfers.
               </p>
             </div>
-
-            {/* Peace of Mind Highlight Badge */}
-            <div className="shrink-0 bg-purple-500/10 border border-purple-500/20 rounded-2xl p-4 flex items-center gap-3.5 shadow-lg">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-600 text-white shadow-md shadow-purple-900/40">
-                <Shield className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-purple-300">100% Peace of Mind</p>
-                <p className="text-[11px] text-slate-400">Guaranteed Protection</p>
-              </div>
-            </div>
+            
           </div>
 
           {/* 3 Protection Cards */}
